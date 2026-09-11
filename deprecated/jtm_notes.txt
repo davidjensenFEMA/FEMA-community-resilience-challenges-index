@@ -1,0 +1,15 @@
+Original 'Race' was:
+  B02001_002E / B02001_001E
+ 
+This was 'White Alone' / 'Total'
+
+However, what we need for the denominator is really all EXCEPT 'White Alone'. This will be the sum of:
+
+B02001_003E (Black or African American Alone)
+B02001_004E (American Indian and Alaska Native Alone)
+B02001_005E (Asian Alone)
+B02001_006E (Native Hawaiian and Other Pacific Islander Alone)
+B02001_007E (Some Other Race Alone)
+B02001_008E (Two Or More Races)
+
+[Note that B02001_009E, 'Two Or More Races Including Some Other Race', and B02001_010E, 'Two Races Excluding Some Other Race, And Three Or More Races', are sub-sets of B0201_0008E such that B02001_008E = B02001_009E + B02001_010E, so we only include B02001_008E to avoid double-dipping

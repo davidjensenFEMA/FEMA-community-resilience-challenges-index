@@ -1,0 +1,235 @@
+# FEMA CRIA - Central Project Configuration
+# This is the single source of truth for project state and metadata.
+# Claude commands (session-start, session-end) read and update this file.
+
+project:
+  name: FEMA CRIA
+  full_name: Community Resilience Indicator Analysis
+  description: Data analysis toolkit for collecting, calculating, and aggregating community resilience indicators from government data sources
+  version: "1.0.0"
+  status: production-ready
+
+# Current focus area
+focus:
+  area: maintenance
+  description: Production ready, bug fixes complete, available for new feature work
+  milestone: Phase 8 Complete
+
+# Module registry - where code lives
+modules:
+  api:
+    path: src/api/
+    description: External API clients (Census, CBP, EAVS, ARDA, POP)
+    files:
+      - census_client.py
+      - cbp_client.py
+      - external_clients.py
+      - base_client.py
+  core:
+    path: src/core/
+    description: Main CRIA workflow logic
+    files:
+      - data_puller.py
+      - calculator.py
+      - aggregator.py
+      - binning.py
+  db:
+    path: src/db/
+    description: Database layer (SQLAlchemy models, repositories)
+    files:
+      - models.py
+      - repositories.py
+      - session.py
+  config:
+    path: src/config/
+    description: Runtime configuration (Pydantic settings, paths)
+    files:
+      - settings.py
+      - paths.py
+  utils:
+    path: src/utils/
+    description: Helper utilities
+    files:
+      - logger.py
+      - excel_tools.py
+
+# Directory map
+directories:
+  config: config/                    # Project config (this file, indicators.yaml)
+  src: src/                          # Source code
+  tests: tests/                      # Test suite
+  scripts: scripts/                  # Production scripts
+  docs: docs/                        # Documentation
+  docs_design: docs/design/          # Architecture references (database_schema, docker, production_deployment, testing)
+  docs_guides: docs/guides/          # User-facing tasks and tutorials (13 guides: generalist + domain + engineering)
+  docs_sessions: docs/sessions/      # Session logs
+  docs_plans: docs/plans/            # Implementation plans (active CONOPs + historical refactor plans)
+  docs_reviews: docs/reviews/        # Agent audit/review reports (YYYYMMDD_<subject>.md)
+  changelog: CHANGELOG.md            # Version history (root)
+  data: data/                        # Input data files
+  output: data/output/               # Generated outputs
+  docker: docker/                    # Docker configuration
+  alembic: alembic/                  # Database migrations
+  deprecated: deprecated/            # Old code
+
+# Current state - updated by session-end command
+state:
+  last_session:
+    date: "2026-05-14"
+    file: docs/sessions/20260514_YEAR_LABEL_VS_DATA_DRIFT.md
+    summary: Diagnosed sponsor's cria_results_county_2024.xlsx as containing ACS 2023 data (their .env had ACS_YEAR=2023; --year only labels output, doesn't drive pulls). Implemented preflight_year_consistency() + YearMismatchError + --allow-year-mismatch override flag. Empirically confirmed via local DB year=2023 indicators matching sponsor's file bit-for-bit (machine epsilon) on 14/17 ACS indicators across 3,222 common counties.
+  active_work:
+    - "Notify sponsor that 2026-05-14 year-mismatch preflight is on main — same command will now exit cleanly with both years on screen and a 3-bullet remediation list"
+    - "Fix two LOW audit findings: 'self.reference is None' latent bug at fail-fast sites in data_puller.py:527 and indicators.py:446 (cheap fix when next touching the area)"
+    - "Distribute regenerated 2024 output to team (county, tract, tribal) — carryover from 2026-05-04"
+    - "Draft high-level write-up of code changes since Jan 30 for FEMA RAPT team — carryover from 2026-05-04"
+    - "CLAUDE.md still references src/core/calculator.py — should be src/core/indicators.py — carryover from 2026-05-04"
+  known_issues:
+    - "CT counties duplicated (9 old + 9 new planning regions) due to COG restructuring — old counties get state-level CBP values"
+    - "Audit H1: _mean_function has no NaN mask (other 4 indicator functions do) — VERIFIED still present at src/core/indicators.py:222 (2026-04-30); partial NaN NETMIG silently uses available columns"
+    - "Audit H2: calc_z_scores DataFrame path produces NaN for zero-std (Series path returns zeros) — behavioral divergence undocumented"
+    - "Audit: census_client.py at 50% coverage — highest-priority gap (17/22 indicators use ACS)"
+    - "cria_indicators_tribal_2024.xlsx still contains 3,919 mixed GEO_IDs (tribal+county) — consider filtering to tribal-only"
+    - "3 county Inactive Voter values still show old imputed value (0.0858) — likely rounding artifact, investigate"
+    - "arctanh(1.0) RuntimeWarning on correlation diagonal — functionally correct (tanh(inf)=1.0) but noisy"
+    - "venv pytest shebang points to capital-G /GitLab/ path — pre-existing infrastructure issue; workaround: use .venv/bin/python -m pytest"
+    - "Two LOW audit findings: fail-fast guards assume self.reference is a DataFrame; len(None) would TypeError if a future refactor allows None at data_puller.py:527 + indicators.py:446 (currently unreachable)"
+  recent_completions:
+    - "Year-label vs data-drift preflight: refuse pipeline runs when --year != settings.acs_year; YearMismatchError(SystemExit) + 3-remediation message + --allow-year-mismatch override; +5 tests (607→612). Closes silent-mislabel mode that produced sponsor's ACS-2023-data-in-_2024.xlsx-named-file."
+    - "Empirical validation of year-mismatch diagnosis: 14 of 17 ACS indicators in our DB year=2023 rows match sponsor's file bit-for-bit (max abs diff 5.55e-17, machine epsilon) across 3,222 common counties — proves their file is a faithful ACS-2023 reproduction"
+    - "README + getting_started.md reorder: bootstrap scripts (import_reference_data + sync_geographies) now lead BEFORE the pipeline command; doctor.py mentioned at every entry point; tract-needs-county callout added — closes upstream half of silent-success cliff"
+    - "Defense-in-depth fail-fast at 3 save_to_database sites (data_puller, indicators, aggregator) — RuntimeError when indicator_map/geo_id_map empty AND data present, names exact remediation script"
+    - "Pipeline preflight in run_full_pipeline.py — counts reference_indicators + per-level geographies before any data pull; PipelinePreflightError lists every failure with fix; tract additionally requires county geographies"
+    - "scripts/doctor.py install diagnostic (496 lines) — paste-friendly env/config/data/DB/optional-API-ping report, --json mode, exit codes 0/1/2"
+
+# Lessons learned - add insights here for future sessions
+lessons_learned:
+  - context: "CLI year flags that label output without driving data pulls are silent-mislabel landmines"
+    lesson: "scripts/run_full_pipeline.py --year flowed only into the output filename and DB year column; the actual ACS pull was driven by settings.acs_year (from .env). A user with ACS_YEAR=2023 who ran with --year 2024 produced cria_results_county_2024.xlsx containing ACS 2023 data, with no warning. The years sheet inside the file correctly reported acs=2023 — the file was honest about itself, but the filename and CLI arg overwrote that signal at every other surface. Doctrine: any CLI arg that tags an artifact MUST either drive the underlying behavior or refuse divergence by default. A loud opt-in override (--allow-year-mismatch) preserves the rare legitimate cases (back-dated tagging, vintage comparisons) without making the bug the default."
+    date: "2026-05-14"
+  - context: "Empirical bit-exact validation beats circumstantial reasoning when source data is reproducible"
+    lesson: "Diagnosing the sponsor's ACS-year mismatch was strongly suggested by the years sheet, but final confidence came from recomputing: pulling indicators tagged year=2023 from local SQLite and comparing to the sponsor's file produced 0 mismatches with max abs diff = 5.55e-17 (machine epsilon) on 14 of 17 ACS indicators across 3,222 common counties. The 3 imperfect-match indicators (Civil Org, Hospitals, Inactive Voter) all had a clean explanation (CBP-year drift, EAVS coverage drift). Without the bit-exact check, the sponsor could have argued 'well, ACS years are similar but maybe not identical'. With it, the diagnosis is closed. When you can recompute cheaply, do — even when the circumstantial case looks solid."
+    date: "2026-05-14"
+  - context: "Silent-success failure modes are the worst kind — defense in depth is the answer"
+    lesson: "The pipeline previously logged 22 'Indicator not found in database' warnings then reported success while persisting nothing. Three independent guards now close this: startup preflight (5-second DB count check before any pull, saves 60-138min on a setup error), in-method save_to_database fail-fast (catches notebooks/ad-hoc scripts that bypass the script), parquet ImportError surface (silent fallback to API returns stripped geography reference). Doctrine: warn-and-continue on partial misses (data-cleanliness issue), raise on total miss (setup-state issue). No single guard is sufficient — different entry points need different defenses."
+    date: "2026-05-06"
+  - context: "Drop-log message wording matters disproportionately"
+    lesson: "'Dropping 3496 rows with invalid index' (always WARNING, no kept-count, no explanation) was the second most-confusing message in the sponsor's escalation — it looked like a bug but is documented outer-merge housekeeping. Same operation reframed as 'Cleaning merge artifacts: dropped N rows (X%), keeping M valid rows. Outer-merge artifact from per-source pulls...' reads as expected behavior. INFO when drop ratio reasonable, WARNING above threshold (60%) so genuine regression isn't silently demoted. Lesson: a scary-looking log line consumes diagnostic attention even when it's not the actual problem."
+    date: "2026-05-06"
+  - context: "Census API returns HTTP 200 with non-JSON body for several error classes"
+    lesson: "Unknown variables, unknown datasets, and bad keys all come back as HTTP 200 with plain-text or HTML error bodies (e.g. \"error: error: unknown variable 'DP04_0014E'\"). response.raise_for_status() does not catch this, and json.loads then dies with the cryptic 'Expecting value: line 2 column 1' — discarding the actual server message. Always wrap json.loads of API responses with a custom exception that preserves status + content-type + body excerpt."
+    date: "2026-05-04"
+  - context: "pydantic-settings preserves .env quotes and whitespace literally"
+    lesson: "CENSUS_API_KEY=\"abc123\" in .env becomes the literal value \"abc123\" (with quotes) at runtime, silently corrupting the URL. Same for trailing whitespace and line-wrap newlines in long values. Strip these in client __init__ rather than asking users to reformat .env."
+    date: "2026-05-04"
+  - context: "Census API keys are 40 lowercase-hex characters"
+    lesson: "Documented format. Heuristic check (length 40 + hex chars only) catches paste errors and wrong-service keys. Implemented as warning, not enforcement, since Census could theoretically change formats."
+    date: "2026-05-04"
+  - context: "Test count: pytest collects vs. raw def count"
+    lesson: "pytest --collect-only reports 541 tests for the suite; a raw `grep '^def test_'` returns 531. Difference is parametrize expansion (10 tests). README badges and CHANGELOG should report the pytest collection count (541), not the function count. Almost reverted a correct number to a wrong one in 2026-04-30 deep-review pass — saved by PCC running actual pytest."
+    date: "2026-04-30"
+  - context: "Doc review process: parallel agent reviews work; verification pass is mandatory"
+    lesson: "Spawning 4 specialized agents in parallel (cria-analyst/data-engineer/decision-scientist/quality-auditor) for doc review surfaced ~30 distinct findings. But ~30% of agent claims were themselves wrong (test counts, file existence, line numbers). ALWAYS run a verification pass against actual code before acting on agent review findings. Spawning the auditor a second time after fixes caught 9 more real bugs I introduced while fixing the first 8."
+    date: "2026-04-30"
+  - context: "EAVS -88 code means 'does not apply', not zero"
+    lesson: "EAVS survey uses -88 for 'does not apply' and -99 for 'data not available'. Both must map to NaN, not 0. -88→0 created false Inactive Voter values (0/0→0) for non-reporting states. 14 states/territories affected."
+    date: "2026-03-25"
+  - context: "Indicators tab vs CRCI pipeline need different imputation"
+    lesson: "The indicators tab must show true values (NaN for missing data → gray on map). The CRCI pipeline needs imputed values (mean fill). Solution: call _clean_indicators() twice — once with impute=False for display, once with impute=True for aggregation. clean_series() already supports both modes."
+    date: "2026-03-25"
+  - context: "Zero denominators are undefined, not zero"
+    lesson: "All 5 indicator calculation functions had result.loc[denom==0]=0. A zero denominator means the indicator is undefined (NaN), not zero. Changed to np.nan across _divide, _max, _mean, _divide_scalar, _reverse_divide."
+    date: "2026-03-25"
+  - context: "Connecticut COG restructuring"
+    lesson: "CT abolished counties in 2022, creating 9 planning regions (FIPS 09110-09190). CBP data now has 18 CT entries (9 old + 9 new). Old counties get uniform state-level values; new regions get actual data starting CBP 2023."
+    date: "2026-02-24"
+  - context: "Tract pipeline DB save time"
+    lesson: "Saving 88K tract source_data records to PostgreSQL takes ~63 minutes. Full tract pipeline takes ~138 minutes. Set PIPELINE_TIMEOUT_MINUTES=240."
+    date: "2026-02-24"
+  - context: "Binning auto-select scoring"
+    lesson: "Must center-scale (z-score) ADCM+TSS across methods before combining. Raw scores let FisherJenks win every time since it optimizes for ADCM by design."
+    date: "2026-02-17"
+  - context: "Pytest timeout configuration"
+    lesson: "Always configure pytest-timeout (<600s) to prevent runaway tests. 18-day incident on shared server."
+    date: "2025-12-22"
+  - context: "JenksCaspall binning algorithm"
+    lesson: "Can enter infinite loop on degenerate data (many duplicates). Use FisherJenks instead."
+    date: "2025-12-05"
+  - context: "Database bulk inserts"
+    lesson: "Use SQLAlchemy Core insert() with batches, not ORM add_all(). 2000x faster."
+    date: "2025-12-03"
+  - context: "Census tract data"
+    lesson: "Cannot use state wildcard for tract queries. Must iterate over each state."
+    date: "2025-12-03"
+  - context: "EAVS data"
+    lesson: "Returns ZIP file containing CSV, not direct CSV. Extract first."
+    date: "2025-12-03"
+  - context: "ARDA religion data"
+    lesson: "POP column is year-specific (POP2020, POP2010). Add generic POP alias."
+    date: "2025-12-03"
+  - context: "Connecticut CBP 2022"
+    lesson: "Has zero values in CBP data. Convert to NaN for proper handling."
+    date: "2025-10-30"
+  - context: "Puerto Rico Limited English"
+    lesson: "Spanish speakers are not 'limited English'. Exclude from calculation."
+    date: "2025-10-30"
+
+# Calibration results - validation against baseline
+calibration:
+  county:
+    year: 2022
+    indicators: 22
+    average_correlation: 0.94
+    status: validated
+  county_2023:
+    year: 2023
+    indicators: 22
+    counties: 3222
+    status: validated
+    notes: "2023 ACS 5-year data (released Dec 2024)"
+  tract:
+    year: 2021
+    indicators: 17
+    average_correlation: 1.0
+    status: perfect
+
+# Tag taxonomy for session docs
+tags:
+  pipeline:
+    - "#data-pull"
+    - "#indicators"
+    - "#aggregation"
+    - "#binning"
+  data_sources:
+    - "#census-acs"
+    - "#cbp"
+    - "#eavs"
+    - "#arda"
+    - "#pop"
+  infrastructure:
+    - "#database"
+    - "#docker"
+    - "#config"
+    - "#migrations"
+  geography:
+    - "#county"
+    - "#tract"
+    - "#state"
+    - "#tribal"
+  activity:
+    - "#bugfix"
+    - "#feature"
+    - "#refactor"
+    - "#performance"
+    - "#calibration"
+    - "#deployment"
+    - "#docs"
+  phases:
+    - "#phase-1"
+    - "#phase-2"
+    - "#phase-3"
+    - "#phase-4"
+    - "#phase-5"
+    - "#phase-6"
+    - "#phase-7"
+    - "#phase-8"

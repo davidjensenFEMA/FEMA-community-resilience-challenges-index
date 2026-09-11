@@ -1,0 +1,54 @@
+# Development Dockerfile for FEMA CRIA
+# Includes all development dependencies and tools
+
+FROM python:3.11-slim
+
+# Metadata
+LABEL maintainer="John Hutchison"
+LABEL description="FEMA CRIA Development Environment"
+LABEL version="2.0.0"
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    postgresql-client \
+    git \
+    vim \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+ENV POETRY_VERSION=1.7.1
+ENV POETRY_HOME=/opt/poetry
+ENV POETRY_NO_INTERACTION=1
+ENV POETRY_VIRTUALENVS_IN_PROJECT=false
+ENV POETRY_VIRTUALENVS_CREATE=false
+
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="${POETRY_HOME}/bin:${PATH}"
+
+# Set working directory
+WORKDIR /app
+
+# Copy dependency files first (for Docker layer caching)
+COPY pyproject.toml poetry.lock* ./
+
+# Install ALL dependencies (including dev)
+RUN poetry install --no-root --no-interaction --no-ansi
+
+# Copy application code
+# Note: In development, this will be mounted as a volume
+COPY . .
+
+# Install the project itself
+RUN poetry install --no-interaction --no-ansi
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/output /app/logs
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Default to bash for development (interactive)
+CMD ["/bin/bash"]

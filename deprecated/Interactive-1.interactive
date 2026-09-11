@@ -1,0 +1,134 @@
+2022/04/20 15:04:02 - cria_logger - INFO - building tract data
+2022/04/20 15:04:02 - cria_logger - INFO - 0: Education
+2022/04/20 15:04:22 - cria_logger - DEBUG - (74002, 3)
+2022/04/20 15:04:22 - cria_logger - INFO - 1: Unemployment
+2022/04/20 15:04:37 - cria_logger - DEBUG - joining (74002, 3) to (74002, 5)
+2022/04/20 15:04:37 - cria_logger - INFO - 2: Disability
+2022/04/20 15:04:48 - cria_logger - DEBUG - joining (74002, 3) to (74002, 7)
+2022/04/20 15:04:48 - cria_logger - INFO - 3: Limited English
+2022/04/20 15:04:55 - cria_logger - DEBUG - joining (74002, 3) to (74002, 9)
+2022/04/20 15:04:55 - cria_logger - INFO - 4: Owner Occupied
+2022/04/20 15:05:08 - cria_logger - DEBUG - joining (74002, 3) to (74002, 11)
+2022/04/20 15:05:08 - cria_logger - INFO - 5: No Vehicle
+2022/04/20 15:05:16 - cria_logger - DEBUG - joining (74002, 3) to (74002, 13)
+2022/04/20 15:05:16 - cria_logger - INFO - 6: Age
+2022/04/20 15:05:30 - cria_logger - DEBUG - joining (74002, 7) to (74002, 19)
+2022/04/20 15:05:30 - cria_logger - INFO - 7: Median Income
+2022/04/20 15:05:39 - cria_logger - DEBUG - joining (74002, 2) to (74002, 20)
+2022/04/20 15:05:39 - cria_logger - INFO - 8: GINI
+2022/04/20 15:05:46 - cria_logger - DEBUG - joining (74002, 2) to (74002, 21)
+2022/04/20 15:05:46 - cria_logger - INFO - 9: Uninsured Population
+2022/04/20 15:05:59 - cria_logger - DEBUG - joining (74002, 3) to (74002, 23)
+2022/04/20 15:05:59 - cria_logger - INFO - 10: Single Parent
+2022/04/20 15:06:12 - cria_logger - DEBUG - joining (74002, 4) to (74002, 26)
+2022/04/20 15:06:12 - cria_logger - INFO - 11: Inactive Voter
+2022/04/20 15:06:13 - cria_logger - DEBUG - supplied FIPS codes do not align well to unsupervisedmerging, generate matching fields by county, state; merge with ACS GEO_IDs
+2022/04/20 15:06:13 - cria_logger - DEBUG - several counties not available - but component towns/villages are available (aggregate)
+2022/04/20 15:06:13 - cria_logger - DEBUG - two missing type values
+2022/04/20 15:06:13 - cria_logger - DEBUG - RespondedDoesNotApply (-88)	RespondedDataNotAvailable (-99)
+2022/04/20 15:06:13 - cria_logger - DEBUG - if 'data does not apply' treat value as 0?
+2022/04/20 15:06:13 - cria_logger - DEBUG - if 'data not available' treat as missing
+2022/04/20 15:06:13 - cria_logger - DEBUG - joining (6717, 2) to (80718, 28)
+2022/04/20 15:06:13 - cria_logger - INFO - 12: Unemployed Women
+2022/04/20 15:06:27 - cria_logger - DEBUG - joining (74002, 3) to (80718, 30)
+2022/04/20 15:06:27 - cria_logger - INFO - 13: Lack of Economic Diversity
+2022/04/20 15:06:37 - cria_logger - DEBUG - joining (74002, 15) to (80718, 44)
+2022/04/20 15:06:37 - cria_logger - INFO - 14: Low Access to Communications
+2022/04/20 15:06:46 - cria_logger - DEBUG - joining (74002, 3) to (80718, 46)
+2022/04/20 15:06:46 - cria_logger - INFO - 15: Poverty
+2022/04/20 15:06:57 - cria_logger - DEBUG - joining (74002, 3) to (80718, 48)
+2022/04/20 15:06:57 - cria_logger - INFO - 16: Civil Org
+2022/04/20 15:06:57 - cria_logger - DEBUG - cbp year and naics codes are separate values, https://www.census.gov/naics/
+2022/04/20 15:06:59 - cria_logger - DEBUG - joining (1568, 2) to (80720, 49)
+2022/04/20 15:06:59 - cria_logger - INFO - 17: Hospitals
+2022/04/20 15:06:59 - cria_logger - DEBUG - cbp year and naics codes are separate values, https://www.census.gov/naics/
+2022/04/20 15:07:00 - cria_logger - DEBUG - joining (460, 2) to (80720, 50)
+2022/04/20 15:07:00 - cria_logger - INFO - 18: Medical
+2022/04/20 15:07:10 - cria_logger - DEBUG - joining (74002, 2) to (80720, 51)
+2022/04/20 15:07:10 - cria_logger - INFO - 19: Religion
+2022/04/20 15:07:11 - cria_logger - DEBUG - joining (3150, 2) to (80729, 53)
+2022/04/20 15:07:11 - cria_logger - INFO - 20: Mobile Homes
+2022/04/20 15:07:19 - cria_logger - DEBUG - joining (74002, 2) to (80729, 54)
+2022/04/20 15:07:19 - cria_logger - INFO - 21: Population Change
+2022/04/20 15:07:20 - cria_logger - DEBUG - joining (3194, 5) to (80780, 59)
+2022/04/20 15:07:20 - cria_logger - DEBUG - dropping 3496 tract rows
+2022/04/20 15:07:21 - cria_logger - INFO - data pull complete for tract, final inputs shape (77284, 59)
+2022/04/20 15:07:21 - cria_logger - INFO - filling 152540 cbp empty values with zeros
+2022/04/20 15:07:23 - cria_logger - DEBUG - sort ref, ensure enumerate produces correct idx (sorted order)
+2022/04/20 15:07:23 - cria_logger - INFO - 0: Education, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 1: Unemployment, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 2: Disability, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 3: Limited English, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 4: Owner Occupied, function: reverse_divide
+2022/04/20 15:07:23 - cria_logger - INFO - 5: No Vehicle, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 6: Age, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 7: Median Income, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 8: GINI, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 9: Uninsured Population, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 10: Single Parent, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 11: Inactive Voter, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 12: Unemployed Women, function: reverse_divide
+2022/04/20 15:07:23 - cria_logger - INFO - 13: Lack of Economic Diversity, function: max
+2022/04/20 15:07:23 - cria_logger - INFO - 14: Low Access to Communications, function: reverse_divide
+2022/04/20 15:07:23 - cria_logger - INFO - 15: Poverty, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 16: Civil Org, function: divide_scalar
+2022/04/20 15:07:23 - cria_logger - INFO - 17: Hospitals, function: divide_scalar
+2022/04/20 15:07:23 - cria_logger - INFO - 18: Medical, function: divide_scalar
+2022/04/20 15:07:23 - cria_logger - INFO - 19: Religion, function: reverse_divide
+2022/04/20 15:07:23 - cria_logger - INFO - 20: Mobile Homes, function: divide
+2022/04/20 15:07:23 - cria_logger - INFO - 21: Population Change, function: mean
+2022/04/20 15:07:24 - cria_logger - INFO - indicators complete
+2022/04/20 15:07:24 - cria_logger - DEBUG - indicators ready, beginning aggregate
+2022/04/20 15:07:24 - cria_logger - DEBUG - indicators cleaned
+2022/04/20 15:07:24 - cria_logger - DEBUG - rescaling 17 columns
+2022/04/20 15:07:24 - cria_logger - DEBUG - Education
+2022/04/20 15:07:24 - cria_logger - DEBUG - Education with 77283 entries
+2022/04/20 15:07:24 - cria_logger - DEBUG - Equal Interval, 0.05074119567871094
+2022/04/20 18:49:38 - cria_logger - DEBUG - Fisher Jenks, 13334.042089223862
+2022/04/20 18:49:38 - cria_logger - DEBUG - HeadTail Breaks, 0.05059099197387695
+2022/04/20 18:49:38 - cria_logger - DEBUG - forcing jenks caspall off
+2022/04/20 18:49:39 - cria_logger - DEBUG - Jenks Caspall, 0.9806599617004395
+2022/04/20 18:49:40 - cria_logger - DEBUG - Maximum Breaks, 0.05239987373352051
+2022/04/20 18:49:41 - cria_logger - DEBUG - Natural Breaks, 1.554304838180542
+2022/04/20 18:49:41 - cria_logger - DEBUG - Quantiles, 0.04625868797302246
+2022/04/20 18:49:41 - cria_logger - DEBUG - Percentiles, 0.07616949081420898
+2022/04/20 18:49:41 - cria_logger - DEBUG - Std Mean, 0.022742033004760742
+2022/04/20 18:49:41 - cria_logger - DEBUG - Unemployment
+2022/04/20 18:49:41 - cria_logger - DEBUG - Unemployment with 77283 entries
+2022/04/20 18:49:41 - cria_logger - DEBUG - Equal Interval, 0.05451846122741699
+2022/04/20 22:38:43 - cria_logger - DEBUG - Fisher Jenks, 13741.697043180466
+2022/04/20 22:38:43 - cria_logger - DEBUG - HeadTail Breaks, 0.04268050193786621
+2022/04/20 22:38:43 - cria_logger - DEBUG - forcing jenks caspall off
+2022/04/20 22:38:44 - cria_logger - DEBUG - Jenks Caspall, 0.7415430545806885
+2022/04/20 22:38:44 - cria_logger - DEBUG - Maximum Breaks, 0.052742958068847656
+2022/04/20 22:38:46 - cria_logger - DEBUG - Natural Breaks, 1.8428738117218018
+2022/04/20 22:38:46 - cria_logger - DEBUG - Quantiles, 0.05493760108947754
+2022/04/20 22:38:46 - cria_logger - DEBUG - Percentiles, 0.04376697540283203
+2022/04/20 22:38:46 - cria_logger - DEBUG - Std Mean, 0.03676891326904297
+2022/04/20 22:38:46 - cria_logger - DEBUG - Disability
+2022/04/20 22:38:46 - cria_logger - DEBUG - Disability with 77283 entries
+2022/04/20 22:38:46 - cria_logger - DEBUG - Equal Interval, 0.04275870323181152
+2022/04/21 02:26:39 - cria_logger - DEBUG - Fisher Jenks, 13672.747319459915
+2022/04/21 02:26:39 - cria_logger - DEBUG - HeadTail Breaks, 0.052063941955566406
+2022/04/21 02:26:39 - cria_logger - DEBUG - forcing jenks caspall off
+2022/04/21 02:26:39 - cria_logger - DEBUG - Jenks Caspall, 0.49516820907592773
+2022/04/21 02:26:39 - cria_logger - DEBUG - Maximum Breaks, 0.0532231330871582
+2022/04/21 02:26:41 - cria_logger - DEBUG - Natural Breaks, 1.5815367698669434
+2022/04/21 02:26:41 - cria_logger - DEBUG - Quantiles, 0.06739377975463867
+2022/04/21 02:26:41 - cria_logger - DEBUG - Percentiles, 0.05135321617126465
+2022/04/21 02:26:41 - cria_logger - DEBUG - Std Mean, 0.020561933517456055
+2022/04/21 02:26:41 - cria_logger - DEBUG - Limited English
+2022/04/21 02:26:41 - cria_logger - DEBUG - Limited English with 77283 entries
+2022/04/21 02:26:41 - cria_logger - DEBUG - Equal Interval, 0.04484915733337402
+2022/04/21 05:57:35 - cria_logger - DEBUG - Fisher Jenks, 12654.165722608566
+2022/04/21 05:57:35 - cria_logger - DEBUG - HeadTail Breaks, 0.04032540321350098
+2022/04/21 05:57:35 - cria_logger - DEBUG - forcing jenks caspall off
+2022/04/21 05:57:36 - cria_logger - DEBUG - Jenks Caspall, 0.4973165988922119
+2022/04/21 05:57:36 - cria_logger - DEBUG - Maximum Breaks, 0.05318164825439453
+2022/04/21 05:57:38 - cria_logger - DEBUG - Natural Breaks, 1.8745677471160889
+2022/04/21 05:57:38 - cria_logger - DEBUG - Quantiles, 0.049429893493652344
+2022/04/21 05:57:38 - cria_logger - DEBUG - Percentiles, 0.03501629829406738
+2022/04/21 05:57:38 - cria_logger - DEBUG - Std Mean, 0.034401893615722656
+2022/04/21 05:57:38 - cria_logger - DEBUG - Owner Occupied
+2022/04/21 05:57:38 - cria_logger - DEBUG - Owner Occupied with 77283 entries
+2022/04/21 05:57:38 - cria_logger - DEBUG - Equal Interval, 0.044914960861206055

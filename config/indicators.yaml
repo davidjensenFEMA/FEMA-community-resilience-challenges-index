@@ -1,0 +1,241 @@
+# FEMA CRIA - Indicator Definitions
+# Reference data for the 22 community resilience indicators.
+# Source: data/cria_data_reference.xlsx (Status sheet)
+#
+# This file provides a YAML-readable version of indicator definitions.
+# The authoritative source remains the Excel file, but this enables
+# easier programmatic access and documentation.
+
+metadata:
+  source_file: data/cria_data_reference.xlsx
+  sheet: Status
+  last_updated: "2025-12-10"
+  total_indicators: 22
+
+# Function types:
+#   divide: numerator / denominator
+#   reverse_divide: 1 - (numerator / denominator)
+#   divide_scalar: (numerator / denominator) * rate
+#   max: max(numerator_cols) / denominator
+#   mean: mean(numerator) / denominator
+
+indicators:
+  # Housing indicators
+  - name: Mobile Homes
+    source: ACS
+    function: divide
+    numerator: "DP04_0014E"
+    denominator: "DP04_0001E"
+    description: Proportion of housing units that are mobile homes
+    order: 1
+
+  - name: Owner Occupied
+    source: ACS
+    function: divide
+    numerator: "DP04_0046E"
+    denominator: "DP04_0001E"
+    description: Proportion of housing units that are owner-occupied
+    order: 2
+
+  # Demographic indicators
+  - name: Education
+    source: ACS
+    function: divide
+    numerator: "S1501_C01_007E, S1501_C01_008E"
+    denominator: "S1501_C01_006E"
+    description: Proportion of population 25+ without high school diploma
+    order: 3
+
+  - name: No Vehicle
+    source: ACS
+    function: divide
+    numerator: "B08201_002E"
+    denominator: "B08201_001E"
+    description: Proportion of households without a vehicle
+    order: 4
+
+  - name: Age
+    source: ACS
+    function: divide
+    numerator: "S0101_C01_030E"
+    denominator: "S0101_C01_001E"
+    description: Proportion of population 65 years and older
+    order: 5
+
+  - name: Disability
+    source: ACS
+    function: divide
+    numerator: "S1810_C02_001E"
+    denominator: "S1810_C01_001E"
+    description: Proportion of population with a disability
+    order: 6
+
+  - name: Limited English
+    source: ACS
+    function: divide
+    numerator: "S1602_C03_001E"
+    denominator: "S1602_C01_001E"
+    description: Proportion of population with limited English proficiency
+    notes: Puerto Rico excluded (Spanish speakers not 'limited English')
+    order: 7
+
+  - name: Single Parent
+    source: ACS
+    function: divide
+    numerator: "B09005_004E, B09005_005E"
+    denominator: "B09005_001E"
+    description: Proportion of children in single-parent households
+    order: 8
+
+  # Communication indicators
+  - name: Low Access to Communications
+    source: ACS
+    function: reverse_divide
+    numerator: "S2801_C01_005E"
+    denominator: "S2801_C01_001E"
+    description: Proportion of households without broadband internet
+    order: 9
+
+  # Civic engagement indicators
+  - name: Inactive Voter
+    source: EAVS
+    function: divide
+    numerator: "A1c"
+    denominator: "A1a"
+    description: Proportion of inactive registered voters
+    notes: Uses fuzzy name matching for county lookup
+    order: 10
+
+  - name: Civil Org
+    source: CBP
+    function: divide_scalar
+    numerator: "813410"
+    denominator: "S0101_C01_001E"
+    rate: 10.0
+    description: Civic and social organizations per 10,000 population
+    notes: NAICS 813410
+    order: 11
+
+  # Population indicators
+  - name: Population Change
+    source: POP
+    function: mean
+    numerator: "NETMIG"
+    denominator: "S0101_C01_001E"
+    description: Net migration rate
+    notes: Uses subset mean/std for z-score calculation
+    order: 12
+
+  - name: Religion
+    source: ARDA
+    function: reverse_divide
+    numerator: "TOTADH"
+    denominator: "POP"
+    description: Proportion of population with religious adherence
+    notes: POP column is year-specific (POP2020, POP2010)
+    order: 13
+
+  # Economic indicators
+  - name: Unemployment
+    source: ACS
+    function: divide
+    numerator: "DP03_0005E"
+    denominator: "DP03_0003E"
+    description: Unemployment rate
+    order: 14
+
+  - name: Unemployed Women
+    source: ACS
+    function: reverse_divide
+    numerator: "DP03_0013E"
+    denominator: "DP03_0012E"
+    description: Proportion of employed women (reversed for vulnerability)
+    order: 15
+
+  - name: Median Income
+    source: ACS
+    function: divide
+    numerator: "S1903_C03_001E"
+    denominator: "1"
+    description: Median household income
+    order: 16
+
+  - name: GINI
+    source: ACS
+    function: divide
+    numerator: "B19083_001E"
+    denominator: "1"
+    description: GINI coefficient (income inequality)
+    order: 17
+
+  - name: Lack of Economic Diversity
+    source: ACS
+    function: max
+    numerator: "DP03_0033E, DP03_0034E, DP03_0035E, DP03_0036E, DP03_0037E, DP03_0038E, DP03_0039E, DP03_0040E, DP03_0041E, DP03_0042E, DP03_0043E, DP03_0044E, DP03_0045E"
+    denominator: "DP03_0032E"
+    description: Largest industry sector as proportion of employment
+    order: 18
+
+  - name: Poverty
+    source: ACS
+    function: divide
+    numerator: "S1701_C02_001E"
+    denominator: "S1701_C01_001E"
+    description: Proportion of population below poverty line
+    order: 19
+
+  # Healthcare indicators
+  - name: Hospitals
+    source: CBP
+    function: divide_scalar
+    numerator: "622110"
+    denominator: "S0101_C01_001E"
+    rate: 10.0
+    description: Hospitals per 10,000 population
+    notes: NAICS 622110
+    order: 20
+
+  - name: Medical
+    source: ACS
+    function: divide_scalar
+    numerator: "S2401_C01_016E"
+    denominator: "S0101_C01_001E"
+    rate: 1.0
+    description: Healthcare practitioners per capita
+    order: 21
+
+  - name: Uninsured Population
+    source: ACS
+    function: divide
+    numerator: "S2701_C04_001E"
+    denominator: "S2701_C01_001E"
+    description: Proportion of population without health insurance
+    order: 22
+
+# Data source summary
+sources:
+  ACS:
+    name: American Community Survey
+    provider: U.S. Census Bureau
+    indicators: 17
+    api: "https://api.census.gov/data/{year}/acs/acs5"
+  CBP:
+    name: County Business Patterns
+    provider: U.S. Census Bureau
+    indicators: 2
+    api: "https://api.census.gov/data/{year}/cbp"
+  EAVS:
+    name: Election Administration and Voting Survey
+    provider: Election Assistance Commission
+    indicators: 1
+    notes: ZIP file download, requires name-based county matching
+  ARDA:
+    name: Association of Religion Data Archives
+    provider: Penn State
+    indicators: 1
+    notes: Local Excel file, decennial data
+  POP:
+    name: Population Estimates
+    provider: U.S. Census Bureau
+    indicators: 1
+    notes: Net migration data

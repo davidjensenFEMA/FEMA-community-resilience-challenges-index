@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16
+    container_name: cria_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cria_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cria_password}
+      POSTGRES_DB: ${POSTGRES_DB:-cria_db}
+    ports:
+      - "5433:5432"  # Map to 5433 on host to avoid conflict with araia-db
+    volumes:
+      # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize database with test DB
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cria_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - cria_network
+
+  # Python Application (Development)
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    container_name: cria_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Database connection (uses service name 'postgres')
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cria_user}:${POSTGRES_PASSWORD:-cria_password}@postgres:5432/${POSTGRES_DB:-cria_db}
+      TEST_DATABASE_URL: postgresql://${POSTGRES_USER:-cria_user}:${POSTGRES_PASSWORD:-cria_password}@postgres:5432/cria_test_db
+      # Python unbuffered output (see logs immediately)
+      PYTHONUNBUFFERED: 1
+    env_file:
+      - ../.env
+    volumes:
+      # Mount entire project for live development
+      - ..:/app
+      # Don't mount these (keep in container)
+      - /app/.venv
+      - /app/__pycache__
+      - /app/.pytest_cache
+    ports:
+      - "8000:8000"  # For future API/web interface
+    stdin_open: true  # Keep STDIN open (for interactive shell)
+    tty: true         # Allocate pseudo-TTY
+    networks:
+      - cria_network
+    restart: unless-stopped
+
+networks:
+  cria_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
